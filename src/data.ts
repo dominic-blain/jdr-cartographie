@@ -1,6 +1,7 @@
 export type Tile = [number, number, string, object?]
 
 const tiles: Tile[] = [
+
     // ROW: 8
     [8, 35, 'water'],
     [8, 36, 'water'],
@@ -13,6 +14,7 @@ const tiles: Tile[] = [
     [8, 43, 'shore'],
     [8, 44, 'shore'],
     [8, 45, 'water'],
+
     // ROW: 9
     [9, 35, 'shore'],
     [9, 36, 'shore'],
@@ -25,6 +27,7 @@ const tiles: Tile[] = [
     [9, 43, 'forest'],
     [9, 44, 'shore'],
     [9, 45, 'shore'],
+
     // ROW: 10
     [10, 35, 'shore'],
     [10, 36, 'forest'],
@@ -37,6 +40,7 @@ const tiles: Tile[] = [
     [10, 43, 'forest'],
     [10, 44, 'forest'],
     [10, 45, 'forest'],
+
     // ROW: 11
     [11, 35, 'forest'],
     [11, 36, 'forest'],
@@ -49,6 +53,7 @@ const tiles: Tile[] = [
     [11, 43, 'forest'],
     [11, 44, 'forest'],
     [11, 45, 'forest'],
+
     // ROW: 12
     [12, 35, 'forest'],
     [12, 36, 'forest'],
@@ -61,6 +66,7 @@ const tiles: Tile[] = [
     [12, 43, 'forest'],
     [12, 44, 'forest'],
     [12, 45, 'forest'],
+
     // ROW: 13
     [13, 35, 'forest'],
     [13, 36, 'forest'],
@@ -80,6 +86,7 @@ const tiles: Tile[] = [
     [13, 43, 'forest'],
     [13, 44, 'forest'],
     [13, 45, 'forest'],
+
     // ROW: 14
     [14, 35, 'forest'],
     [14, 36, 'forest'],
@@ -92,6 +99,7 @@ const tiles: Tile[] = [
     [14, 43, 'forest'],
     [14, 44, 'forest'],
     [14, 45, 'forest'],
+
     // ROW: 15
     [15, 35, 'forest'],
     [15, 36, 'forest'],
@@ -106,6 +114,7 @@ const tiles: Tile[] = [
     [15, 43, 'plain'],
     [15, 44, 'plain'],
     [15, 45, 'forest'],
+
     // ROW: 16
     [16, 35, 'forest'],
     [16, 36, 'forest'],
@@ -134,6 +143,7 @@ const tiles: Tile[] = [
     }],
     [16, 44, 'plain'],
     [16, 45, 'forest'],
+
     // ROW: 17
     [17, 35, 'forest'],
     [17, 36, 'forest'],
@@ -146,6 +156,7 @@ const tiles: Tile[] = [
     [17, 43, 'plain'],
     [17, 44, 'forest'],
     [17, 45, 'forest'],
+
     // ROW: 18
     [18, 35, 'forest'],
     [18, 36, 'forest'],
@@ -160,6 +171,7 @@ const tiles: Tile[] = [
     [18, 43, 'plain'],
     [18, 44, 'forest'],
     [18, 45, 'forest'],
+
     // ROW: 19
     [19, 35, 'forest'],
     [19, 36, 'forest'],
@@ -174,6 +186,7 @@ const tiles: Tile[] = [
     }],
     [19, 44, 'forest'],
     [19, 45, 'forest'],
+
     // ROW: 20
     [20, 35, 'forest'],
     [20, 36, 'forest'],
