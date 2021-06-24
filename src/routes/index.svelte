@@ -1,5 +1,6 @@
 <script>
     import tiles from '../data'
+    import { fly } from 'svelte/transition'
 
     let openSide = false
     let activeTileIndex = null
@@ -8,6 +9,11 @@
     function handleTileClick (index) {
         openSide = true
         activeTileIndex = index
+    }
+
+    function handleCloseClick () {
+        openSide = false
+        activeTileIndex = null
     }
 </script>
 
@@ -30,7 +36,7 @@
 </div>
 
 {#if openSide && activeTile}
-    <aside>
+    <aside transition:fly={{y: 100}}>
         <h2>
             {activeTile[2]}
             <span>({activeTile[0]}, {activeTile[1]})</span>
@@ -45,17 +51,18 @@
             {/each}
             </table>
         {/if}
+        <button on:click={handleCloseClick}>
+            <svg viewBox="0 0 16 16">
+                <g stroke-width="2" stroke="currentColor">
+                    <line x1="0" y1="0" x2="16" y2="16" />
+                    <line x1="16" y1="0" x2="0" y2="16" />
+                </g>
+            </svg>
+        </button>
     </aside>
 {/if}
 
 <style>
-    .map {
-        padding: 10px;
-        margin: 10px;
-        border: 1px solid black;
-        border-radius: 4px;
-    }
-
     aside {
         position: fixed;
         right: 0;
@@ -82,6 +89,24 @@
         font-weight: bold;
     }
 
+    aside button {
+        width: 16px;
+        height: 16px;
+        padding: 16px;
+        border-radius: 100%;
+        background: coral;
+        color: white;
+        box-sizing: content-box;
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform: translate(-33.333%, -33.333%);
+        transition: background-color 100ms;
+    }
+    aside button:hover {
+        background: darkred;
+    }
+
     h2 {
         text-transform: capitalize;
         padding-bottom: 10px;
@@ -99,7 +124,14 @@
         position: relative;
         top: -1px;
     }
-    svg {
+
+    .map {
+        padding: 10px;
+        margin: 10px;
+        border: 1px solid black;
+        border-radius: 4px;
+    }
+    .map svg {
         background-color: antiquewhite;
     }
 

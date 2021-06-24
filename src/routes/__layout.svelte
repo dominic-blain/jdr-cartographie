@@ -1,10 +1,11 @@
 <script>
+    import '../normalize.css';
     import '../app.css';
 </script>
 
 <h1>JDR - Cartographie</h1>
 <slot></slot>
-<p>Pour contribuer (à venir)</p>
+<footer>Heron</footer>
 
 <style>
     h1 {
@@ -13,7 +14,7 @@
         margin: 0;
         padding: 40px;
     }
-    p {
+    footer {
         font-size: 14px;
         padding: 0 20px 10px;
     }
