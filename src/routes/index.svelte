@@ -1,36 +1,52 @@
 <script>
-    import tiles from '../data'
+    import rows, { tiles } from '../data'
     import { fly } from 'svelte/transition'
 
     let openSide = false
-    let activeTileIndex = null
-    $: activeTile = tiles[activeTileIndex]
+    let activeY = null
+    let activeX = null
+    $: activeTile = activeY && activeX ? rows[activeX][activeY] : null
 
-    function handleTileClick (index) {
+    function handleTileClick (y, x) {
         openSide = true
-        activeTileIndex = index
+        activeY = y
+        activeX = x
     }
 
     function handleCloseClick () {
         openSide = false
-        activeTileIndex = null
+        activeY = null
+        activeX = null
     }
 </script>
 
 <div class="map">
-    <svg viewBox="0 0 101 101">
-        {#each tiles as tile, index}
-        <g>
-            <title>{ `(${tile[0]}, ${tile[1]}) - ${tile[2]}` }</title>
-            <rect 
-                class={`tile tile-${tile[2]} ${index === activeTileIndex ? 'active' : ''}`}
-                x={tile[1]}
-                y={tile[0]}
-                width="1"
-                height="1"
-                on:click={() => handleTileClick(index)}
-            />
-        </g>
+    <svg viewBox="0 0 55 55">
+        {#each rows as columns, x}
+            {#each columns as tile, y}
+            <g class={`tile-group ${
+                y === activeY &&
+                x === activeX ? 
+                'active' : ''
+            }`}>
+
+                <title>{ `(${y+1}, ${x+1}) - ${tile[0] ? tile[0] : 'inconnu'}` }</title>
+                <rect 
+                    class={`tile tile-${tile[0] ? tile[0] : 'inconnu'}`}
+                    {x}
+                    {y}
+                    width="1"
+                    height="1"
+                    on:click={() => handleTileClick(y, x)}
+                />
+                <circle 
+                    class="dot"
+                    cx={x+0.5}
+                    cy={y+0.5}
+                    r="0.25"
+                />
+            </g>
+            {/each}
         {/each}
     </svg>
 </div>
@@ -38,15 +54,15 @@
 {#if openSide && activeTile}
     <aside transition:fly={{y: 100}}>
         <h2>
-            {activeTile[2]}
-            <span>({activeTile[0]}, {activeTile[1]})</span>
+            {activeTile[0] ? activeTile[0] : 'inconnu'}
+            <span>({activeY+1}, {activeX+1})</span>
         </h2>
-        {#if activeTile[3]}
+        {#if activeTile[1]}
             <table>
-            {#each Object.keys(activeTile[3]) as key}
+            {#each Object.keys(activeTile[1]) as key}
                 <tr>
                     <td>{key}</td>
-                    <td>{activeTile[3][key]}</td>
+                    <td>{activeTile[1][key]}</td>
                 </tr>
             {/each}
             </table>
@@ -135,11 +151,25 @@
         background-color: antiquewhite;
     }
 
-    .tile {
-        fill: grey;
+    .tile-group {
         position: relative;
     }
-    .tile.active {
+    .tile {
+        cursor: pointer;
+    }
+    .dot {
+        pointer-events: none;
+        fill: black;
+        opacity: 0;
+        transition: 100ms ease-out;
+        transition-property: opacity, fill;
+    }
+
+    .tile-group:hover .dot {
+        opacity: 1;
+    }
+    .tile-group.active .dot {
+        opacity: 1;
         fill: red;
     }
     .tile-plaine {
@@ -163,7 +193,7 @@
     .tile-batiment {
         fill: saddlebrown;
     }
-    .tile:hover {
-        fill: black;
+    .tile-inconnu {
+        fill: antiquewhite;
     }
 </style>
