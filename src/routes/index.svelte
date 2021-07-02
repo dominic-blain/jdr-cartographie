@@ -1,7 +1,23 @@
-<script>
-    import rows, { tiles } from '../data'
+<script context="module">
+    export async function load ({ fetch }) {
+        const res = await fetch('data.json')
+        if (res.ok) {
+            return {
+                props: {
+                    rows: await res.json()
+                }
+            }
+        }
+        return {
+            status: res.status,
+            error: new Error('Could not load data')
+        }
+    }
+</script>
+<script lang="typescript">
     import { fly } from 'svelte/transition'
 
+    export let rows: Array<Array<string>> 
     let openSide = false
     let activeY = null
     let activeX = null
@@ -23,16 +39,16 @@
 <div class="map">
     <svg viewBox="0 0 55 55">
         {#each rows as columns, x}
-            {#each columns as tile, y}
+            {#each columns as type, y}
             <g class={`tile-group ${
                 y === activeY &&
                 x === activeX ? 
                 'active' : ''
             }`}>
 
-                <title>{ `(${y+1}, ${x+1}) - ${tile[0] ? tile[0] : 'inconnu'}` }</title>
+                <title>{ `(${y+1}, ${x+1}) - ${type ? type : 'inconnu'}` }</title>
                 <rect 
-                    class={`tile tile-${tile[0] ? tile[0] : 'inconnu'}`}
+                    class={`tile tile-${type ? type : 'inconnu'}`}
                     {x}
                     {y}
                     width="1"
@@ -54,19 +70,19 @@
 {#if openSide && activeTile}
     <aside transition:fly={{y: 100}}>
         <h2>
-            {activeTile[0] ? activeTile[0] : 'inconnu'}
+            {activeTile ? activeTile : 'inconnu'}
             <span>({activeY+1}, {activeX+1})</span>
         </h2>
-        {#if activeTile[1]}
+        <!-- {#if activeTile}
             <table>
-            {#each Object.keys(activeTile[1]) as key}
+            {#each Object.keys(activeTile) as key}
                 <tr>
                     <td>{key}</td>
-                    <td>{activeTile[1][key]}</td>
+                    <td>{activeTile[key]}</td>
                 </tr>
             {/each}
             </table>
-        {/if}
+        {/if} -->
         <button on:click={handleCloseClick}>
             <svg viewBox="0 0 16 16">
                 <g stroke-width="2" stroke="currentColor">
