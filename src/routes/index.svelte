@@ -107,7 +107,7 @@
         box-shadow: 5px 5px 20px -10px #d26969;
     }
 
-    table {
+    /* table {
         border-collapse: collapse;
         width: 100%;
     }
@@ -119,7 +119,7 @@
 
     td:first-of-type {
         font-weight: bold;
-    }
+    } */
 
     aside button {
         width: 16px;
