@@ -11,8 +11,6 @@ export async function get() {
       majorDimension: 'COLUMNS'
     }, (err, res) => {
       if (err) resolve({ status: 500 })
-      console.log('res', res)
-      console.log('err', err)
       resolve({ body: res?.data.values })
     })
   }).catch(error => {
