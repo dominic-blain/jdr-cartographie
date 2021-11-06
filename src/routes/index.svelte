@@ -1,15 +1,17 @@
 <script context="module">
     export async function load ({ fetch }) {
-        const res = await fetch('data.json')
-        if (res.ok) {
+        const response = await fetch('data.json')
+        if (response.ok) {
+            const { tiles, buildings } = await response.json()
             return {
                 props: {
-                    rows: await res.json()
+                    tiles,
+                    buildings
                 }
             }
         }
         return {
-            status: res.status,
+            status: response.status,
             error: new Error('Could not load data')
         }
     }
@@ -17,11 +19,42 @@
 <script lang="typescript">
     import { fly } from 'svelte/transition'
 
-    export let rows: Array<Array<string>> 
+    type MapTileType = 'plaine' | 'foret' | 'mont' | 'rive' | 'eau'
+    type MapBuilding = {
+        name: string
+        type: string
+        y: number
+        x: number,
+        npcs: string[]
+    }
+    type MapTile = {
+        x: number
+        y: number
+        type: MapTileType,
+        building: MapBuilding | null
+    }
+    type Map = MapTile[]
+
+    export let tiles: MapTileType[][]
+    export let buildings: MapBuilding[]
+    
+    $: map = tiles.reduce((acc, columns, x) => {
+        columns.forEach((type, y) => {
+            const building = buildings.find(b => b.y === y && b.x === x) || null
+            acc.push({
+                x,
+                y,
+                type,
+                building
+            })
+        })
+        return acc
+    }, [] as Map)
+
     let openSide = false
-    let activeY = null
-    let activeX = null
-    $: activeTile = activeY && activeX ? rows[activeX][activeY] : null
+    let activeY: number | null = null
+    let activeX: number | null = null
+    $: activeTile = map.find(m => m.x === activeX && m.y === activeY) || null
 
     function handleTileClick (y, x) {
         openSide = true
@@ -34,35 +67,42 @@
         activeY = null
         activeX = null
     }
+
+    function isActive(x: number, y: number): boolean {
+        return x === activeX && y === activeY
+    }
 </script>
 
 <div class="map">
-    <svg viewBox="0 0 55 55">
-        {#each rows as columns, x}
-            {#each columns as type, y}
-            <g class={`tile-group ${
-                y === activeY &&
-                x === activeX ? 
-                'active' : ''
-            }`}>
-
-                <title>{ `(${y+1}, ${x+1}) - ${type ? type : 'inconnu'}` }</title>
-                <rect 
-                    class={`tile tile-${type ? type : 'inconnu'}`}
+    <svg viewBox="0 0 60 60">
+        {#each map as {x, y, type, building}}
+            <g
+                class="tile-group"
+                class:active={isActive(x, y)}
+                on:click={() => handleTileClick(y, x)}
+            >
+                <title>
+                    ({y+1}, {x+1}) - {type || 'inconnu'} 
+                    {#if building}{` [${building.type}]`}{/if}
+                </title>
+                <rect
+                    class={`tile tile-${type || 'inconnu'}`}
                     {x}
                     {y}
                     width="1"
                     height="1"
-                    on:click={() => handleTileClick(y, x)}
                 />
+                {#if building}
+                    <polygon class={`building building-${building.type || 'inconnu'}`} points="{x+0.5},{y} {x+1},{y+0.5} {x+1},{y+1} {x},{y+1} {x},{y+0.5}" />
+                {/if}
                 <circle 
                     class="dot"
                     cx={x+0.5}
                     cy={y+0.5}
                     r="0.25"
                 />
+                
             </g>
-            {/each}
         {/each}
     </svg>
 </div>
@@ -70,19 +110,30 @@
 {#if openSide && activeTile}
     <aside transition:fly={{y: 100}}>
         <h2>
-            {activeTile ? activeTile : 'inconnu'}
-            <span>({activeY+1}, {activeX+1})</span>
+            {#if activeTile.building}
+                {activeTile.building.name}
+            {:else}
+                {activeTile ? activeTile.type : 'inconnu'}
+            {/if}
+            <div class="coords">({activeY+1}, {activeX+1})</div>
         </h2>
-        <!-- {#if activeTile}
+        <!-- Building info -->
+        {#if activeTile.building}
             <table>
-            {#each Object.keys(activeTile) as key}
+                <!-- Type -->
                 <tr>
-                    <td>{key}</td>
-                    <td>{activeTile[key]}</td>
+                    <td>type</td>
+                    <td>{activeTile.building.type}</td>
                 </tr>
-            {/each}
+                <!-- NPCs -->
+                {#each activeTile.building.npcs as npc}
+                    <tr>
+                        <td>pnj</td>
+                        <td>{npc}</td>
+                    </tr>
+                {/each}
             </table>
-        {/if} -->
+        {/if}
         <button on:click={handleCloseClick}>
             <svg viewBox="0 0 16 16">
                 <g stroke-width="2" stroke="currentColor">
@@ -99,7 +150,7 @@
         position: fixed;
         right: 0;
         bottom: 0;
-        width: 400px;
+        width: 500px;
         max-width: 100%;
         background: azure;
         padding: 40px;
@@ -107,7 +158,7 @@
         box-shadow: 5px 5px 20px -10px #d26969;
     }
 
-    /* table {
+    table {
         border-collapse: collapse;
         width: 100%;
     }
@@ -119,7 +170,7 @@
 
     td:first-of-type {
         font-weight: bold;
-    } */
+    }
 
     aside button {
         width: 16px;
@@ -144,7 +195,7 @@
         padding-bottom: 10px;
         border-bottom: 2px solid black;
     }
-    h2 span {
+    h2 .coords {
         font-weight: normal;
         font-size: 0.6em;
         padding: 0.4em 0.3em;
@@ -155,6 +206,7 @@
         font-family: 'Courier New', Courier, monospace;
         position: relative;
         top: -1px;
+        display: inline-block;
     }
 
     .map {
@@ -195,7 +247,7 @@
         fill: seagreen;
     }
     .tile-mont {
-        fill: rgb(76, 76, 97);
+        fill: darkslategrey;
     }
     .tile-rive {
         fill: burlywood;
@@ -211,5 +263,24 @@
     }
     .tile-inconnu {
         fill: antiquewhite;
+    }
+
+    .building-batiment {
+        fill: grey;
+    }
+    .building-reliquaire {
+        fill: purple;
+    }
+    .building-dongeon {
+        fill: crimson;
+    }
+    .building-quete {
+        fill: gold;
+    }
+    .building-puit {
+        fill: midnightblue;
+    }
+    .building-pnj {
+        fill: coral;
     }
 </style>
