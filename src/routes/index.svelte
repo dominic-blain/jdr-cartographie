@@ -16,7 +16,7 @@
         }
     }
 </script>
-<script lang="typescript">
+<script lang="ts">
     import { fly } from 'svelte/transition';
 
     type MapTileType = 'plaine' | 'foret' | 'mont' | 'rive' | 'eau'
